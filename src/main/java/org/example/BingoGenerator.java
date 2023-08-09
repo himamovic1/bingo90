@@ -41,7 +41,7 @@ public class BingoGenerator {
     /**
      * generate a list on indices representing where blanks will be in a single column
      */
-    private static int[] getBlanksIndicesForColumn(int columnIndex) {
+    public static int[] getBlanksIndicesForColumn(int columnIndex) {
         var numOfBlanks = TOTAL_NUMBER_OF_ROWS - NUMS_PER_COL.get(columnIndex).length;
         var positions = IntStream.rangeClosed(0, TOTAL_NUMBER_OF_ROWS - 1).boxed().collect(Collectors.toList());
         var indices = new int[numOfBlanks];
