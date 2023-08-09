@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +26,19 @@ public class BingoGenerator {
 
     public static int[][] generateBingo90Board() {
         var board = new int[TOTAL_NUMBER_OF_ROWS][TOTAL_NUMBER_OF_COLS];
+        var blanksPerRow = new int[TOTAL_NUMBER_OF_ROWS];
 
         for (int col = 0; col < TOTAL_NUMBER_OF_COLS; col++) {
             var blankIndices = getBlanksIndicesForColumn(col);
 
             // put blanks in the board column
-            for (int row : blankIndices)
-                board[row][col] = 8;
+            for (int row : blankIndices) {
+                blanksPerRow[row]++;
+                board[row][col] = -1;
+            }
         }
 
+        System.out.printf("Blanks per row [%s]", Arrays.toString(blanksPerRow));
         return board;
     }
 
@@ -41,10 +46,9 @@ public class BingoGenerator {
     /**
      * generate a list on indices representing where blanks will be in a single column
      */
-    public static int[] getBlanksIndicesForColumn(int columnIndex) {
+    public static List<Integer> getBlanksIndicesForColumn(int columnIndex) {
         var numOfBlanks = TOTAL_NUMBER_OF_ROWS - NUMS_PER_COL.get(columnIndex).length;
         var positions = IntStream.rangeClosed(0, TOTAL_NUMBER_OF_ROWS - 1).boxed().collect(Collectors.toList());
-        var indices = new int[numOfBlanks];
 
         while (true) {
             // get needed number of positions for the given column
@@ -57,8 +61,7 @@ public class BingoGenerator {
                 continue;
 
             //System.out.printf("Indices are [%s] %n", Arrays.toString(indices));
-            for (int i = 0; i < numOfBlanks; i++) indices[i] = sub.get(i);
-            return indices;
+            return sub;
         }
     }
 }

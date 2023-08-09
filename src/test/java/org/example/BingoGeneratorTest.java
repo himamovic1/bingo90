@@ -2,12 +2,12 @@ package org.example;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BingoGeneratorTest {
-    public static final int TOTAL_NUMBER_OF_ROWS = 6 * 3;
-    public static final int TOTAL_NUMBER_OF_COLS = 9;
-
 
     @Test
     public void generateBingo90_valid() {
@@ -15,7 +15,17 @@ public class BingoGeneratorTest {
         var board = BingoGenerator.generateBingo90Board();
 
         // then
-        assertThat(board).hasDimensions(TOTAL_NUMBER_OF_ROWS, TOTAL_NUMBER_OF_COLS);
+        assertThat(board).hasDimensions(18, 9);
+
+        // check it has exactly four blanks per row
+        var blanksPerRow = new int[18];
+        for (int row = 0; row < 18; row++)
+            for (int col = 0; col < 9; col++)
+                if (board[row][col] == -1)
+                    blanksPerRow[row]++;
+
+        assertThat(Arrays.stream(blanksPerRow).boxed().toList())
+                .isEqualTo(Collections.nCopies(18, 4));
     }
 
 
@@ -27,9 +37,9 @@ public class BingoGeneratorTest {
         // then
         assertThat(indices).hasSize(9);
 
-        for (int i = 0; i < indices.length - 2; i++) {
-            assertThat(indices[i]).isNotEqualTo(indices[i + 1] + 1);
-            assertThat(indices[i + 1]).isNotEqualTo(indices[i + 2] + 2);
+        for (int i = 0; i < indices.size() - 2; i++) {
+            assertThat(indices.get(i)).isNotEqualTo(indices.get(i + 1) + 1);
+            assertThat(indices.get(i + 1)).isNotEqualTo(indices.get(i + 2) + 2);
         }
     }
 }
