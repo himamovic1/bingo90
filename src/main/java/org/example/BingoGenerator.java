@@ -33,8 +33,18 @@ public class BingoGenerator {
 
 
     public static int[][] generateBingo90Board() {
-        System.out.println("Generating a new bingo board");
-        return generateBlanksBoard();
+        int[][] board = null;
+
+        while (board == null) {
+            try {
+                board = generateBlanksBoard();
+            } catch (StackOverflowError e) {
+                // ignore this error and ignore the log because it adds a lot of delay
+                //System.out.println("Generating got stuck, retrying");
+            }
+        }
+
+        return board;
     }
 
     public static int[][] generateBlanksBoard() {
@@ -42,6 +52,7 @@ public class BingoGenerator {
         var blanksPerStripCol = new int[6][TOTAL_NUMBER_OF_COLS];
         var blanksPerCol = new int[TOTAL_NUMBER_OF_COLS];
         var rndGenerator = new Random();
+        var iterationLimit = 150;
 
         // per strip
         for (int i = 0; i < TOTAL_NUMBER_OF_ROWS; i++) {
@@ -49,8 +60,10 @@ public class BingoGenerator {
 
             // pick one row variation from the list of possible ones
             var row = ROW_BLANKS_VARIATIONS.get(rndGenerator.nextInt(ROW_BLANKS_VARIATIONS.size()));
-            while (!canUseRowVariation(blanksPerCol, blanksPerStripCol, row, i, strip))
+            while (!canUseRowVariation(blanksPerCol, blanksPerStripCol, row, i, strip)) {
+                if (--iterationLimit <= 0) throw new StackOverflowError("Too many iterations");
                 row = ROW_BLANKS_VARIATIONS.get(rndGenerator.nextInt(ROW_BLANKS_VARIATIONS.size()));
+            }
 
             for (var col : row) {
                 board[i][col] = -1; // set blank field

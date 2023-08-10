@@ -1,6 +1,7 @@
 package org.example;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,17 @@ public class BingoGeneratorTest {
 
         // then
         allBoards.forEach(this::assertIsValidBingo90Board);
+    }
+
+    @Test
+    @Timeout(value = 10)
+    public void generateBingo90_10kTickets_valid() {
+        // when
+        for (int i = 0; i < 10000; i++)
+            BingoGenerator.generateBingo90Board();
+
+        // then
+        // test should complete before the timeout
     }
 
 
