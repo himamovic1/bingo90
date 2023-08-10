@@ -21,7 +21,7 @@ public class Utils {
 
             // print out each column in the row
             for (int col = 0; col < cols; col++) {
-                if (bingo[row][col] < 1) System.out.print("   ");
+                if (bingo[row][col] < 0) System.out.print("-- ");
                 else System.out.printf("%2s ", bingo[row][col]);
             }
 

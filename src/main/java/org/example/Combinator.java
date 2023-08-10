@@ -1,12 +1,14 @@
 package org.example;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Combinator {
 
-    private static void iteration(int n, int k, int index, int i, Set<List<Integer>> all, List<Integer> tmp) {
+    private static void iteration(int n, int k, int index, int i, List<List<Integer>> all, List<Integer> tmp) {
         if (index == k) {
-            all.add(tmp.stream().toList());
+            all.add(tmp.stream().map(x -> x - 1).sorted().toList());
             return;
         }
 
@@ -20,8 +22,8 @@ public class Combinator {
         iteration(n, k, index, i + 1, all, tmp);
     }
 
-    public static Set<List<Integer>> combineKOutOfN(int k, int n) {
-        var combinations = new HashSet<List<Integer>>();
+    public static List<List<Integer>> combineKOutOfN(int k, int n) {
+        var combinations = new LinkedList<List<Integer>>();
         var tmp = new ArrayList<Integer>(k);
 
         for (int i = 0; i < k; i++) {
