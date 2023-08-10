@@ -1,6 +1,5 @@
 package org.example.bingo;
 
-import org.example.bingo.BingoGenerator;
 import org.example.random.CombinatoricRangeGenerator;
 import org.example.random.RangeGenerator;
 import org.example.random.ShuffleRangeGenerator;
@@ -8,10 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BingoGeneratorTest {
+    private static final int TOTAL_COLS = 9;
+    private static final int TOTAL_ROWS = 18;
+    private static final int BLANK = -1;
+
     private static final RangeGenerator SHUFFLE_RANGE_GENERATOR =
             new ShuffleRangeGenerator(4, 9);
 
@@ -28,7 +32,8 @@ public class BingoGeneratorTest {
         var board = sut.generateBingo90Board();
 
         // then
-        assertIsValidBingo90Board(board);
+        assertBoardIsComplete(board);
+        assertStripColumnsInOrder(board);
     }
 
     @Test
@@ -42,7 +47,8 @@ public class BingoGeneratorTest {
             allBoards.add(sut.generateBingo90Board());
 
         // then
-        allBoards.forEach(this::assertIsValidBingo90Board);
+        assertThat(allBoards).allSatisfy(this::assertBoardIsComplete);
+        assertThat(allBoards).allSatisfy(this::assertStripColumnsInOrder);
     }
 
     @Test
@@ -69,7 +75,8 @@ public class BingoGeneratorTest {
         var board = sut.generateBingo90Board();
 
         // then
-        assertIsValidBingo90Board(board);
+        assertBoardIsComplete(board);
+        assertStripColumnsInOrder(board);
     }
 
     @Test
@@ -83,7 +90,8 @@ public class BingoGeneratorTest {
             allBoards.add(sut.generateBingo90Board());
 
         // then
-        allBoards.forEach(this::assertIsValidBingo90Board);
+        assertThat(allBoards).allSatisfy(this::assertBoardIsComplete);
+        assertThat(allBoards).allSatisfy(this::assertStripColumnsInOrder);
     }
 
     @Test
@@ -101,16 +109,16 @@ public class BingoGeneratorTest {
     }
 
 
-    private void assertIsValidBingo90Board(int[][] board) {
+    private void assertBoardIsComplete(int[][] board) {
         assertThat(board).hasDimensions(18, 9);
 
-        var blanksPerRow = new int[18];
-        var blanksPerCol = new int[9];
+        var blanksPerRow = new int[TOTAL_ROWS];
+        var blanksPerCol = new int[TOTAL_COLS];
         var numbers = new HashSet<Integer>();
 
-        for (int row = 0; row < 18; row++)
-            for (int col = 0; col < 9; col++)
-                if (board[row][col] == -1) {
+        for (int row = 0; row < TOTAL_ROWS; row++)
+            for (int col = 0; col < TOTAL_COLS; col++)
+                if (board[row][col] == BLANK) {
                     // check it has exactly four blanks per row
                     // and correct number of blanks per column
                     blanksPerRow[row]++;
@@ -132,5 +140,17 @@ public class BingoGeneratorTest {
         // assert each column has exactly needed number of blanks
         assertThat(Arrays.stream(blanksPerCol).boxed().toList())
                 .isEqualTo(List.of(9, 8, 8, 8, 8, 8, 8, 8, 7));
+    }
+
+    private void assertStripColumnsInOrder(int[][] board) {
+        for (int col = 0; col < TOTAL_COLS; col++) {
+            // check 3 rows per strip
+            for (int row = 0; row < TOTAL_ROWS; row += 3) {
+                var values = Stream.of(board[row][col], board[row + 1][col], board[row + 2][col])
+                        .filter(v -> v != BLANK).toList();
+
+                assertThat(values).isSorted();
+            }
+        }
     }
 }
