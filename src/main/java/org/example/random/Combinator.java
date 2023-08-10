@@ -1,4 +1,4 @@
-package org.example;
+package org.example.random;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

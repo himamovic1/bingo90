@@ -1,8 +1,9 @@
-package org.example;
+package org.example.bingo;
 
-import org.example.rows.CombinatoricRangeGenerator;
-import org.example.rows.RangeGenerator;
-import org.example.rows.ShuffleRangeGenerator;
+import org.example.bingo.BingoGenerator;
+import org.example.random.CombinatoricRangeGenerator;
+import org.example.random.RangeGenerator;
+import org.example.random.ShuffleRangeGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 

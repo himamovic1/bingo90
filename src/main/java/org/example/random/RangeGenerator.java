@@ -1,4 +1,4 @@
-package org.example.rows;
+package org.example.random;
 
 import java.util.List;
 

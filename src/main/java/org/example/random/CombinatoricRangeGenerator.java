@@ -1,6 +1,4 @@
-package org.example.rows;
-
-import org.example.Combinator;
+package org.example.random;
 
 import java.util.List;
 import java.util.Random;

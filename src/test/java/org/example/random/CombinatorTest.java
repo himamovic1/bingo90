@@ -1,5 +1,6 @@
-package org.example;
+package org.example.random;
 
+import org.example.random.Combinator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
