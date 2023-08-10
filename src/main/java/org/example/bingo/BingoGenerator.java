@@ -3,6 +3,7 @@ package org.example.bingo;
 import org.example.exception.TooManyIterationsException;
 import org.example.random.RangeGenerator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,7 @@ public class BingoGenerator {
     public static final int TOTAL_NUMBER_OF_ROWS = 6 * 3;
     public static final int TOTAL_NUMBER_OF_COLS = 9;
     public static final int ITERATION_LIMIT = 500;
-    public static final int BLANK_SPACE = -1;
+    public static final int BLANK = -1;
     private static final List<List<Integer>> NUMS_PER_COL;
     private static final List<Integer> BLANKS_PER_COL;
 
@@ -74,7 +75,7 @@ public class BingoGenerator {
             }
 
             for (var col : row) {
-                board[i][col] = BLANK_SPACE; // set blank field
+                board[i][col] = BLANK; // set blank field
                 blanksPerCol[col]++; // increment column counter
                 blanksPerStripCol[strip][col]++; // increment column per strip counter
             }
@@ -108,10 +109,21 @@ public class BingoGenerator {
         for (int col = 0; col < TOTAL_NUMBER_OF_COLS; col++) {
             Collections.shuffle(NUMS_PER_COL.get(col));
 
-            var offset = 0;
+            // create list of numbers for column
+            var iter = NUMS_PER_COL.get(col).iterator();
+            var column = new ArrayList<Integer>(TOTAL_NUMBER_OF_ROWS);
             for (int row = 0; row < TOTAL_NUMBER_OF_ROWS; row++)
-                if (board[row][col] != BLANK_SPACE)
-                    board[row][col] = NUMS_PER_COL.get(col).get(offset++);
+                column.add(board[row][col] != BLANK ? iter.next() : BLANK);
+
+            // ensure numbers within a strip are sorted desc
+            for (int row = 0; row < TOTAL_NUMBER_OF_ROWS; row += 3) {
+                var numbers = column.subList(row, row + 3).stream()
+                        .filter(n -> n != BLANK).sorted().iterator();
+
+                for (int i = row; i < row + 3; i++)
+                    if (board[i][col] != BLANK)
+                        board[i][col] = numbers.next();
+            }
         }
 
         return board;
