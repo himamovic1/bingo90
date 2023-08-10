@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.rows.CombinatoricRangeGenerator;
+import org.example.rows.RangeGenerator;
+import org.example.rows.ShuffleRangeGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -11,24 +14,34 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BingoGeneratorTest {
+    private static final RangeGenerator SHUFFLE_RANGE_GENERATOR =
+            new ShuffleRangeGenerator(4, 9);
+
+    private static final RangeGenerator COMBINATOR_RANGE_GENERATOR =
+            new CombinatoricRangeGenerator(4, 9);
+
 
     @Test
-    public void generateBingo90_single_valid() {
+    public void generateBingo90_shuffle_single_valid() {
+        // given
+        var sut = new BingoGenerator(SHUFFLE_RANGE_GENERATOR);
+
         // when
-        var board = BingoGenerator.generateBingo90Board();
+        var board = sut.generateBingo90Board();
 
         // then
         assertIsValidBingo90Board(board);
     }
 
     @Test
-    public void generateBingo90_hundredTickets_valid() {
+    public void generateBingo90_shuffle_hundredTickets_valid() {
         // given
+        var sut = new BingoGenerator(SHUFFLE_RANGE_GENERATOR);
         var allBoards = new LinkedList<int[][]>();
 
         // when
         for (int i = 0; i < 100; i++)
-            allBoards.add(BingoGenerator.generateBingo90Board());
+            allBoards.add(sut.generateBingo90Board());
 
         // then
         allBoards.forEach(this::assertIsValidBingo90Board);
@@ -36,10 +49,54 @@ public class BingoGeneratorTest {
 
     @Test
     @Timeout(value = 10)
-    public void generateBingo90_10kTickets_valid() {
+    public void generateBingo90__shuffle_10kTickets_valid() {
+        // given
+        var sut = new BingoGenerator(SHUFFLE_RANGE_GENERATOR);
+
         // when
         for (int i = 0; i < 10000; i++)
-            BingoGenerator.generateBingo90Board();
+            sut.generateBingo90Board();
+
+        // then
+        // test should complete before the timeout
+    }
+
+
+    @Test
+    public void generateBingo90_combinator_single_valid() {
+        // given
+        var sut = new BingoGenerator(COMBINATOR_RANGE_GENERATOR);
+
+        // when
+        var board = sut.generateBingo90Board();
+
+        // then
+        assertIsValidBingo90Board(board);
+    }
+
+    @Test
+    public void generateBingo90_combinator_hundredTickets_valid() {
+        // given
+        var sut = new BingoGenerator(COMBINATOR_RANGE_GENERATOR);
+        var allBoards = new LinkedList<int[][]>();
+
+        // when
+        for (int i = 0; i < 100; i++)
+            allBoards.add(sut.generateBingo90Board());
+
+        // then
+        allBoards.forEach(this::assertIsValidBingo90Board);
+    }
+
+    @Test
+    @Timeout(value = 10)
+    public void generateBingo90__combinator_10kTickets_valid() {
+        // given
+        var sut = new BingoGenerator(COMBINATOR_RANGE_GENERATOR);
+
+        // when
+        for (int i = 0; i < 10000; i++)
+            sut.generateBingo90Board();
 
         // then
         // test should complete before the timeout

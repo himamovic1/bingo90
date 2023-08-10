@@ -1,14 +1,13 @@
 package org.example;
 
+import org.example.rows.RangeGenerator;
+
 import java.util.List;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 public class BingoGenerator {
     public static final int TOTAL_NUMBER_OF_ROWS = 6 * 3;
     public static final int TOTAL_NUMBER_OF_COLS = 9;
-
-    private static final List<List<Integer>> ROW_BLANKS_VARIATIONS;
     private static final List<int[]> NUMS_PER_COL;
     private static final List<Integer> BLANKS_PER_COL;
 
@@ -27,12 +26,16 @@ public class BingoGenerator {
         BLANKS_PER_COL = NUMS_PER_COL.stream()
                 .map(c -> TOTAL_NUMBER_OF_ROWS - c.length)
                 .toList();
+    }
 
-        ROW_BLANKS_VARIATIONS = Combinator.combineKOutOfN(4, 9);
+    private final RangeGenerator rangeGenerator;
+
+    public BingoGenerator(RangeGenerator rangeGenerator) {
+        this.rangeGenerator = rangeGenerator;
     }
 
 
-    public static int[][] generateBingo90Board() {
+    public int[][] generateBingo90Board() {
         int[][] board = null;
 
         while (board == null) {
@@ -47,11 +50,10 @@ public class BingoGenerator {
         return board;
     }
 
-    public static int[][] generateBlanksBoard() {
+    public int[][] generateBlanksBoard() {
         var board = new int[TOTAL_NUMBER_OF_ROWS][TOTAL_NUMBER_OF_COLS];
         var blanksPerStripCol = new int[6][TOTAL_NUMBER_OF_COLS];
         var blanksPerCol = new int[TOTAL_NUMBER_OF_COLS];
-        var rndGenerator = new Random();
         var iterationLimit = 150;
 
         // per strip
@@ -59,10 +61,10 @@ public class BingoGenerator {
             int strip = i / 3;
 
             // pick one row variation from the list of possible ones
-            var row = ROW_BLANKS_VARIATIONS.get(rndGenerator.nextInt(ROW_BLANKS_VARIATIONS.size()));
+            var row = rangeGenerator.generateRange();
             while (!canUseRowVariation(blanksPerCol, blanksPerStripCol, row, i, strip)) {
                 if (--iterationLimit <= 0) throw new StackOverflowError("Too many iterations");
-                row = ROW_BLANKS_VARIATIONS.get(rndGenerator.nextInt(ROW_BLANKS_VARIATIONS.size()));
+                row = rangeGenerator.generateRange();
             }
 
             for (var col : row) {
